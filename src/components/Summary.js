@@ -18,11 +18,12 @@ function Summary() {
       try {
         const incomeResponse = await axios.get('https://backend-node-beryl.vercel.app/api/v1/users/readIncome');
         const incomeData = incomeResponse.data.data || [];
-        setTotalIncome(incomeData.reduce((total, entry) => total + (entry.amount || 0), 0));
+        setTotalIncome(incomeData.reduce((total, entry) => total + (entry.income|| 0), 0));
 
         const expensesResponse = await axios.get('https://backend-node-beryl.vercel.app/api/v1/users/readExpense');
         const expenseData = expensesResponse.data.data || [];
         setTotalExpenses(expenseData.reduce((total, entry) => total + (entry.price || 0), 0));
+        console.log(expenseData.reduce((total, entry) => total + (entry.price || 0)));
         setAllExpenses(expenseData); // Store all expenses for future filtering
       } catch (error) {
         console.error('Error fetching data:', error);
