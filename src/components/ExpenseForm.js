@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import '../styles.css';
+
 function ExpenseForm({ addExpense }) {
   const [item, setItem] = useState('');
   const [price, setPrice] = useState('');
@@ -11,8 +12,9 @@ function ExpenseForm({ addExpense }) {
     const expense = { item, price: parseFloat(price), date };
 
     try {
-      await axios.post('https://backend-node-beryl.vercel.app/api/v1/users/createExpense', expense); 
-      addExpense(expense); 
+      const response = await axios.post('https://backend-node-beryl.vercel.app/api/v1/users/createExpense', expense);
+      // Assuming the response contains the expense with a unique id
+      addExpense(response.data); // Use the response data directly
       setItem('');
       setPrice('');
       setDate('');
@@ -57,4 +59,5 @@ function ExpenseForm({ addExpense }) {
     </form>
   );
 }
+
 export default ExpenseForm;

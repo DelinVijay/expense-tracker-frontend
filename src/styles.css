@@ -12,8 +12,8 @@ body {
     padding: 20px;
   }
   
-  .login-container, .main-content {
-    margin-top: 100px;
+ .main-content {
+    margin-top: 10px;
     background-color: #176B87;
     border-radius: 15px;
     padding: 20px;
@@ -41,19 +41,29 @@ body {
   
   .form label span {
     display: inline-block;
-    width: 150px; /* Adjust this width based on your layout needs */
+    width: 150px; 
     font-weight: bold;
     font-weight: 100;
   }
   
   .input-box {
-    width: 100%; /* Full width within the form */
-    max-width: 300px; /* Limit width for better appearance */
+    width: 100%;
+    max-width: 300px;
     padding: 10px;
     border: 1px solid #04364A;;
     border-radius: 10px;
-    margin-right: 10px; /* Space between input and button */
+    margin-right: 10px;
     box-sizing: border-box;
+  }
+  .input-box1{
+    width: 100%; 
+    max-width: 250px; 
+    padding: 10px;
+    border: 1px solid #04364A;;
+    border-radius: 10px;
+    margin-left: 10px;
+    box-sizing: border-box;
+    margin-bottom: 30px;
   }
   
   .btn {
@@ -61,6 +71,7 @@ body {
     color: white;
     border: none;
     padding: 10px 20px;
+    margin: 5px;
     border-radius: 20px;
     cursor: pointer;
     font-size: 16px;
@@ -83,7 +94,25 @@ body {
   .search-update {
     margin-top: 20px;
   }
+
+  .search{
+    margin-top: 20px;
+    background-color: #176B87;
+    color: white;
+    padding: 10px;
+    border-radius: 15px;
+    text-align: center;
+    font-size: 20px; 
+    margin-top: 20px;
+  }
   .results {
+    margin-bottom:30px;
+    background-color: #176B87;
+    color: white;
+    padding: 10px;
+    border-radius: 15px;
+    text-align: center;
+    font-size: 20px; 
     margin-top: 20px;
   }
   
@@ -91,5 +120,8 @@ body {
     margin-bottom: 10px;
   }
   
+  .search h3{
+    font-weight: 100;
+  }
   
   
