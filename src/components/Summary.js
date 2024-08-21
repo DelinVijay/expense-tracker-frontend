@@ -6,28 +6,29 @@ function Summary() {
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredExpenses, setFilteredExpenses] = useState([]);
-
   const [noResultsMessage, setNoResultsMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    const fetchIncomeAndExpenses = async () => {
-      setIsLoading(true);
-      try {
-        const incomeResponse = await axios.get('https://backend-node-beryl.vercel.app/api/v1/users/readIncome');
-        const incomeData = incomeResponse.data.data || [];
-        setTotalIncome(incomeData.reduce((total, entry) => total + (entry.income|| 0), 0));
 
-        const expensesResponse = await axios.get('https://backend-node-beryl.vercel.app/api/v1/users/readExpense');
-        const expenseData = expensesResponse.data.data || [];
-        setTotalExpenses(expenseData.reduce((total, entry) => total + (entry.price || 0), 0));
-      }
-      catch(error){
-        console.error('Error fetching data:', error);
-      }
-      finally {
-        setIsLoading(false);
-      }
-    };
+  // Fetch income and expenses on component mount
+  const fetchIncomeAndExpenses = async () => {
+    setIsLoading(true);
+    try {
+      const incomeResponse = await axios.get('https://backend-node-beryl.vercel.app/api/v1/users/readIncome');
+      const incomeData = incomeResponse.data.data || [];
+      setTotalIncome(incomeData.reduce((total, entry) => total + (entry.income || 0), 0));
+
+      const expensesResponse = await axios.get('https://backend-node-beryl.vercel.app/api/v1/users/readExpense');
+      const expenseData = expensesResponse.data.data || [];
+      setTotalExpenses(expenseData.reduce((total, entry) => total + (entry.price || 0), 0));
+      setFilteredExpenses(expenseData); // Initialize filtered expenses with all expenses
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchIncomeAndExpenses();
   }, []);
 
@@ -41,14 +42,14 @@ function Summary() {
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
       setNoResultsMessage('Please enter a search query.');
-      setFilteredExpenses([]); 
+      setFilteredExpenses([]);
       return;
     }
-  
+
     try {
       setIsLoading(true);
       const response = await axios.get(`https://backend-node-beryl.vercel.app/api/v1/users/readSpecificExpense/?item=${searchQuery}`);
-      const filtered = response.data.data || []; 
+      const filtered = response.data.data || [];
       setFilteredExpenses(filtered);
       setNoResultsMessage(filtered.length === 0 ? 'No results found.' : '');
     } catch (error) {
@@ -58,15 +59,17 @@ function Summary() {
       setIsLoading(false);
     }
   };
+
   const handleClearAll = async () => {
     if (window.confirm('Are you sure you want to clear all expenses?')) {
       try {
         setIsLoading(true);
-        await axios.delete('https://backend-node-beryl.vercel.app/api/v1/users/deleteExpense'); // Adjust the endpoint as necessary
-        // Clear state after successful deletion
+        await axios.delete('https://backend-node-beryl.vercel.app/api/v1/users/deleteExpense');
+        // Clear state and re-fetch data after successful deletion
         setTotalExpenses(0);
         setFilteredExpenses([]);
         setNoResultsMessage('All expenses have been cleared.');
+        await fetchIncomeAndExpenses(); // Re-fetch data
       } catch (error) {
         console.error('Error clearing all expenses:', error);
         setNoResultsMessage('Error clearing expenses.');
@@ -75,21 +78,24 @@ function Summary() {
       }
     }
   };
+
   const handleClear = async () => {
     if (window.confirm('Are you sure you want to clear your income?')) {
       try {
         setIsLoading(true);
         await axios.delete('https://backend-node-beryl.vercel.app/api/v1/users/deleteIncome');
         setTotalIncome(0);
-        setNoResultsMessage('Income have been cleared.');
+        setNoResultsMessage('Income has been cleared.');
+        await fetchIncomeAndExpenses(); // Re-fetch data
       } catch (error) {
-        console.error('Error clearing all income:', error);
+        console.error('Error clearing income:', error);
         setNoResultsMessage('Error clearing income.');
       } finally {
         setIsLoading(false);
       }
     }
   };
+
   const balance = totalIncome - totalExpenses;
 
   return (
@@ -124,7 +130,7 @@ function Summary() {
                 </div>
               ))
             ) : (
-              <p>Please enter a search query.</p>
+              <p>No expenses to show.</p>
             )
           )}
         </div>
