@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../styles.css';
-
 function Summary() {
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredExpenses, setFilteredExpenses] = useState([]);
-  const [allExpenses, setAllExpenses] = useState([]); // Store all expenses separately
+
   const [noResultsMessage, setNoResultsMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-
-  // Fetch income and expenses on component mount
   useEffect(() => {
     const fetchIncomeAndExpenses = async () => {
       setIsLoading(true);
@@ -23,19 +20,17 @@ function Summary() {
         const expensesResponse = await axios.get('https://backend-node-beryl.vercel.app/api/v1/users/readExpense');
         const expenseData = expensesResponse.data.data || [];
         setTotalExpenses(expenseData.reduce((total, entry) => total + (entry.price || 0), 0));
-        console.log(expenseData.reduce((total, entry) => total + (entry.price || 0)));
-        setAllExpenses(expenseData); // Store all expenses for future filtering
-      } catch (error) {
+      }
+      catch(error){
         console.error('Error fetching data:', error);
-      } finally {
+      }
+      finally {
         setIsLoading(false);
       }
     };
-
     fetchIncomeAndExpenses();
   }, []);
 
-  // Function to format numbers as currency
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -43,18 +38,17 @@ function Summary() {
     }).format(value || 0);
   };
 
-  // Handle search button click
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
       setNoResultsMessage('Please enter a search query.');
-      setFilteredExpenses([]); // Clear results if no search query
+      setFilteredExpenses([]); 
       return;
     }
   
     try {
       setIsLoading(true);
       const response = await axios.get(`https://backend-node-beryl.vercel.app/api/v1/users/readSpecificExpense/?item=${searchQuery}`);
-      const filtered = response.data.data || []; // Ensure the response data is handled correctly
+      const filtered = response.data.data || []; 
       setFilteredExpenses(filtered);
       setNoResultsMessage(filtered.length === 0 ? 'No results found.' : '');
     } catch (error) {
@@ -64,9 +58,38 @@ function Summary() {
       setIsLoading(false);
     }
   };
-  
-
-  // Calculate balance
+  const handleClearAll = async () => {
+    if (window.confirm('Are you sure you want to clear all expenses?')) {
+      try {
+        setIsLoading(true);
+        await axios.delete('https://backend-node-beryl.vercel.app/api/v1/users/deleteExpense'); // Adjust the endpoint as necessary
+        // Clear state after successful deletion
+        setTotalExpenses(0);
+        setFilteredExpenses([]);
+        setNoResultsMessage('All expenses have been cleared.');
+      } catch (error) {
+        console.error('Error clearing all expenses:', error);
+        setNoResultsMessage('Error clearing expenses.');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+  const handleClear = async () => {
+    if (window.confirm('Are you sure you want to clear your income?')) {
+      try {
+        setIsLoading(true);
+        await axios.delete('https://backend-node-beryl.vercel.app/api/v1/users/deleteIncome');
+        setTotalIncome(0);
+        setNoResultsMessage('Income have been cleared.');
+      } catch (error) {
+        console.error('Error clearing all income:', error);
+        setNoResultsMessage('Error clearing income.');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
   const balance = totalIncome - totalExpenses;
 
   return (
@@ -75,7 +98,8 @@ function Summary() {
       <p>Total Income: {formatCurrency(totalIncome)}</p>
       <p>Total Expenses: {formatCurrency(totalExpenses)}</p>
       <p>Balance: {formatCurrency(balance)}</p>
-
+      <button onClick={handleClearAll} className="btn btn-clear">Clear All Expenses</button>
+      <button onClick={handleClear} className="btn btn-clear">Clear Your Income</button>
       <div className="search">
         <h3>Search Expenses</h3>
         <input
@@ -100,7 +124,7 @@ function Summary() {
                 </div>
               ))
             ) : (
-              <p>No expenses to show.</p>
+              <p>Please enter a search query.</p>
             )
           )}
         </div>
@@ -108,5 +132,4 @@ function Summary() {
     </div>
   );
 }
-
 export default Summary;

@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import '../styles.css';
-
 function IncomeForm({ setIncome }) {
   const [income, setAmount] = useState('');
   const [date, setDate] = useState('');
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const amount = { income: parseFloat(income), date:date };
-
     try {
-      await axios.post('https://backend-node-beryl.vercel.app/api/v1/users/createIncome', amount); // Ensure this matches your backend route
+      await axios.post('https://backend-node-beryl.vercel.app/api/v1/users/createIncome', amount); 
       setIncome((prevIncome) => [...prevIncome, amount]);
       setAmount('');
       setDate('');
@@ -46,5 +43,4 @@ function IncomeForm({ setIncome }) {
     </form>
   );
 }
-
 export default IncomeForm;

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import '../styles.css';
-
 function ExpenseForm({ addExpense }) {
   const [item, setItem] = useState('');
   const [price, setPrice] = useState('');
@@ -12,8 +11,8 @@ function ExpenseForm({ addExpense }) {
     const expense = { item, price: parseFloat(price), date };
 
     try {
-      await axios.post('https://backend-node-beryl.vercel.app/api/v1/users/createExpense', expense); // Make sure this matches your backend route
-      addExpense(expense); // Update local state
+      await axios.post('https://backend-node-beryl.vercel.app/api/v1/users/createExpense', expense); 
+      addExpense(expense); 
       setItem('');
       setPrice('');
       setDate('');
@@ -58,5 +57,4 @@ function ExpenseForm({ addExpense }) {
     </form>
   );
 }
-
 export default ExpenseForm;
